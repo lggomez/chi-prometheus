@@ -9,10 +9,9 @@ This is a port of [negroni-prometheus](https://github.com/zbindenren/negroni-pro
 [Logging v. instrumentation](http://peter.bourgon.org/blog/2016/02/07/logging-v-instrumentation.html)
 
 Instead of logging request times, it is considered best practice to provide an endpoint for instrumentation tools (like prometheus).
-
-## Installation
-
-    go get github.com/766b/chi-prometheus
+    
+## How to Install our package
+    go get github.com/edjumacator/chi-prometheus
 
 ## Usage
 
