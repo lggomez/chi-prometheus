@@ -1,4 +1,3 @@
-// Port https://github.com/zbindenren/negroni-prometheus for chi router
 package chiprometheus
 
 import (
@@ -23,37 +22,49 @@ const (
 )
 
 // Middleware is a handler that exposes prometheus metrics for the number of requests,
-// the latency and the response size, partitioned by status code, method and HTTP path.
+// the latency and the response size, partitioned by status code, method and HTTP path
+// or path pattern
 type Middleware struct {
 	reqs    *prometheus.CounterVec
 	latency *prometheus.HistogramVec
 }
 
 // NewMiddleware returns a new prometheus Middleware handler.
+// Prometheus counters are registered to the default
+// prometheus registerer (prometheus.DefaultRegisterer)
 func NewMiddleware(name string, buckets ...float64) func(next http.Handler) http.Handler {
+	return NewRegMiddleware(prometheus.DefaultRegisterer, name, buckets...)
+}
+
+// NewRegMiddleware returns a new prometheus Middleware handler.
+func NewRegMiddleware(r prometheus.Registerer, name string,
+	buckets ...float64) func(next http.Handler) http.Handler {
+
 	var m Middleware
 	m.reqs = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name:        reqsName,
-			Help:        "How many HTTP requests processed, partitioned by status code, method and HTTP path.",
+			Name: reqsName,
+			Help: "How many HTTP requests processed, partitioned by status code, " +
+				"method and HTTP path.",
 			ConstLabels: prometheus.Labels{"service": name},
 		},
 		[]string{"code", "method", "path"},
 	)
-	prometheus.MustRegister(m.reqs)
+	r.MustRegister(m.reqs)
 
 	if len(buckets) == 0 {
 		buckets = dflBuckets
 	}
 	m.latency = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Name:        latencyName,
-		Help:        "How long it took to process the request, partitioned by status code, method and HTTP path.",
+		Name: latencyName,
+		Help: "How long it took to process the request, partitioned by status code, " +
+			"method and HTTP path.",
 		ConstLabels: prometheus.Labels{"service": name},
 		Buckets:     buckets,
 	},
 		[]string{"code", "method", "path"},
 	)
-	prometheus.MustRegister(m.latency)
+	r.MustRegister(m.latency)
 	return m.handler
 }
 
@@ -68,32 +79,42 @@ func (c Middleware) handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-// NewPatternMiddleware returns a new prometheus Middleware handler that groups requests by the chi routing pattern.
-// EX: /users/{firstName} instead of /users/bob
+// NewPatternMiddleware returns a new prometheus Middleware handler that groups
+// requests by the chi routing pattern. Ex: /users/{firstName} instead of /users/bob
+// Prometheus counters are registered to the default
+// prometheus registerer (prometheus.DefaultRegisterer)
 func NewPatternMiddleware(name string, buckets ...float64) func(next http.Handler) http.Handler {
+	return NewRegPatternMiddleware(prometheus.DefaultRegisterer, name, buckets...)
+}
+
+// NewRegPatternMiddleware returns a new prometheus Middleware handler that
+// groups requests by the chi routing pattern. Ex: /users/{firstName} instead of /users/bob
+func NewRegPatternMiddleware(r prometheus.Registerer, name string, buckets ...float64) func(next http.Handler) http.Handler {
 	var m Middleware
 	m.reqs = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name:        patternReqsName,
-			Help:        "How many HTTP requests processed, partitioned by status code, method and HTTP path (with patterns).",
+			Name: patternReqsName,
+			Help: "How many HTTP requests processed, partitioned by status code, " +
+				"method and HTTP path (with patterns).",
 			ConstLabels: prometheus.Labels{"service": name},
 		},
 		[]string{"code", "method", "path"},
 	)
-	prometheus.MustRegister(m.reqs)
+	r.MustRegister(m.reqs)
 
 	if len(buckets) == 0 {
 		buckets = dflBuckets
 	}
 	m.latency = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Name:        patternLatencyName,
-		Help:        "How long it took to process the request, partitioned by status code, method and HTTP path (with patterns).",
+		Name: patternLatencyName,
+		Help: "How long it took to process the request, partitioned by status code," +
+			" method and HTTP path (with patterns).",
 		ConstLabels: prometheus.Labels{"service": name},
 		Buckets:     buckets,
 	},
 		[]string{"code", "method", "path"},
 	)
-	prometheus.MustRegister(m.latency)
+	r.MustRegister(m.latency)
 	return m.patternHandler
 }
 

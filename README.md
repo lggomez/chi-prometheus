@@ -2,14 +2,16 @@
 
 [Prometheus](http://prometheus.io) middleware for [chi](https://github.com/go-chi/chi).
 
-This is a port of [negroni-prometheus](https://github.com/zbindenren/negroni-prometheus) middleware (written by [Rene Zbinden](https://github.com/zbindenren)).
+This is a port of [negroni-prometheus](https://github.com/zbindenren/negroni-prometheus)
+middleware (written by [Rene Zbinden](https://github.com/zbindenren)).
 
 ## Why
 
 [Logging v. instrumentation](http://peter.bourgon.org/blog/2016/02/07/logging-v-instrumentation.html)
 
-Instead of logging request times, it is considered best practice to provide an endpoint for instrumentation tools (like prometheus).
-    
+Instead of logging request times, it is considered best practice to provide an endpoint
+for instrumentation tools (like prometheus).
+
 ## How to Install our package
     go get github.com/edjumacator/chi-prometheus
 
@@ -44,7 +46,7 @@ An endpoint with the following information (stripped output):
 
 Take a look at the [example](./pattern_example/main.go).
 
-## What do you get 
+## What do you get
 
 An endpoint with the following information (stripped output):
 
@@ -70,4 +72,7 @@ An endpoint with the following information (stripped output):
 
 # Fork Information !!!
 
-  This project was forked from 766b with the intention of adding pattern matching to the logger. [Original Project Here](https://github.com/766b/chi-prometheus).
+  This project was forked from edjumacator/chi-prometheus that
+  had been forked from 766b with the intention of adding pattern matching to the logger.
+  [Original Project Here](https://github.com/766b/chi-prometheus). This fork adds the
+  possibility to register chi middleware handler to non-default prometheus registerer.
