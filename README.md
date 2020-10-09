@@ -13,7 +13,7 @@ Instead of logging request times, it is considered best practice to provide an e
 for instrumentation tools (like prometheus).
 
 ## How to Install our package
-    go get github.com/edjumacator/chi-prometheus
+    go get github.com/lggomez/chi-prometheus
 
 ## Usage
 

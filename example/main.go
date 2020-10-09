@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-chi/chi"
 
-	"github.com/766b/chi-prometheus"
+	"github.com/lggomez/chi-prometheus"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
