@@ -211,3 +211,24 @@ func Test_MultipleLoggers(t *testing.T) {
 		t.Errorf("body does not contain first name pattern count summary '%s'", firstNamePatternCount)
 	}
 }
+
+func Test_DuplicateRouters(t *testing.T) {
+	gen := func() chi.Router {
+		n := chi.NewRouter()
+		mid := NewMiddleware("testduplicated")
+		n.Use(mid)
+		return n
+	}
+
+	n1 := gen()
+	n1.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "ok")
+	}))
+
+	n2 := gen()
+	n2.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "ok")
+	}))
+}

@@ -50,7 +50,9 @@ func NewRegMiddleware(r prometheus.Registerer, name string,
 		},
 		[]string{"code", "method", "path"},
 	)
-	r.MustRegister(m.reqs)
+
+	reg := prometheus.NewRegistry()
+	reg.MustRegister(m.reqs)
 
 	if len(buckets) == 0 {
 		buckets = dflBuckets
@@ -64,7 +66,8 @@ func NewRegMiddleware(r prometheus.Registerer, name string,
 	},
 		[]string{"code", "method", "path"},
 	)
-	r.MustRegister(m.latency)
+	reg.MustRegister(m.latency)
+
 	return m.handler
 }
 
